@@ -19,8 +19,15 @@ Documentation
    | Returns the stringification of the given JSON object.
 * jsonParse(a: String) <Any: Any>
    | Returns an object from the given JSON string.
-* serve(handler: fun(r: Request) Response, port: Number)
-   | Hosts a server that handles requests and responds on the given port.
+* serve(handler: fun(r: Request) Response, details: { optional port: Number, optional host: String }): {
+   abort: fun () Any,
+   isFinished: fun() Bool,
+   [YIELDS] await: fun() Any,
+}
+   | Hosts a server that handles requests and responds on the optional port and host.
+   | Returns utility functions that let you interact with the server.
+* fetch(url: String, { method: String, optional headers: <String: String>, optional body: String }) Response
+   | Invokes an HTTP request to the given URL, returning a Response.
 * Request: Struct
    | Represents a request.
    Fields
