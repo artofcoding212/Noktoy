@@ -3,7 +3,7 @@
 Noktoy features a unique syntax that has never been seen before, and borrows language concepts from languages like Rust, Zig, Python, TypeScript, and C.\
 <table>
   <tr>
-    <td style="vertical-align: center; width: 50%; padding-left: 15px;">
+    <td style="vertical-align: center; width: 50%; padding-left: 15px; padding-right: 40px;">
       <h3>Learn by example</h3>
       <p>Hate being told how good a programming language is,<br>
       only to find out that the syntax is horrendous?<br>
@@ -11,7 +11,7 @@ Noktoy features a unique syntax that has never been seen before, and borrows lan
       if Noktoy is the language for you.
       </p>
     </td>
-    <td style="vertical-align: center; padding-left: 0px; padding-right: 0px; width: 100%;">
+    <td style="vertical-align: center; padding-left: 40px; padding-right: 0px; width: 50%;">
       
 ```rs
 use Std::{
