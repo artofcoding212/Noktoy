@@ -5,11 +5,6 @@ Noktoy features a unique syntax that has never been seen before, and borrows lan
   <tr>
     <td style="vertical-align: center; width: 50%; padding-left: 15px; padding-right: 40px;">
       <h3>Learn by example</h3>
-      <p>Hate being told how good a programming language is,<br>
-      only to find out that the syntax is horrendous?<br>
-      I do too, so I've provided an example for you to see<br>
-      if Noktoy is the language for you.
-      </p>
     </td>
     <td style="vertical-align: center; padding-left: 40px; padding-right: 0px; width: 50%;">
       
