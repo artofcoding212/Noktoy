@@ -1,0 +1,3 @@
+use Std::Fs::{thisPath, dirName, resolve}
+
+ext resolve(dirName(thisPath()), "./hello_world.noktoy")

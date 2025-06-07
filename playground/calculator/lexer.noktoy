@@ -1,0 +1,125 @@
+use Std::{
+    String::{split, codeAt, tonumber},
+}
+
+tag Token {
+    Number(Number),
+    Id(String),
+    Eof,
+
+    Equals,
+    LParen,
+    RParen,
+
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Pow,   
+    Percent,
+}
+
+let tokenLookup: <String: Token> = {
+    "+" -> Token::Plus,
+    "-" -> Token::Minus,
+    "*" -> Token::Star,
+    "/" -> Token::Slash,
+    "%" -> Token::Percent,
+    "^" -> Token::Pow,
+    "=" -> Token::Equals,
+    "(" -> Token::LParen,
+    ")" -> Token::RParen,
+}
+
+fun alpha(char: String) Bool {
+    let c = codeAt(char, 0)
+    ret (c>64 && c<91) || (c>96 && c<123) || c== 95
+}
+
+fun digit(char: String) Bool {
+    let c = codeAt(char, 0)
+    ret c>47 && c<58
+}
+
+str Lexer {
+    curr &String
+
+    # We use a fancy trick with pointers to allow for fast character advancement thanks to pointer arithmetic
+    !new(src: String) Lexer {
+        let arr = split(src, "")
+        mut first: &String = &''
+        let me = '\0'
+        for i, v of (arr) {
+            if i==0 {
+                first = &v
+                cnt
+            };
+            &v
+        }
+        &me
+
+        Lexer { curr -> first }
+    }
+
+    whitespace(self: Lexer) {
+        whl mat *self.curr { 
+            _ { false }
+            ' ', '\t', '\r', '\n' { true }
+        } {
+            self.curr = self.curr+1
+        }
+    }
+
+    next(self: Lexer) Token {
+        self:whitespace()
+
+        if alpha(*self.curr) {
+            mut buf: String = ""
+
+            whl alpha(*self.curr) || digit(*self.curr) {
+                buf = buf..*self.curr
+                self.curr = self.curr+1
+            }
+
+            ret Token::Id(buf)
+        }
+
+        if digit(*self.curr) {
+            mut buf: String = ""
+
+            whl digit(*self.curr) {
+                buf = buf..*self.curr
+                self.curr = self.curr+1
+            }
+
+            if *self.curr == '.' {
+                buf = buf..*self.curr
+                self.curr = self.curr+1
+
+                whl digit(*self.curr) {
+                    buf = buf..*self.curr
+                    self.curr = self.curr+1
+                }
+            }
+
+            ret Token::Number(tonumber(buf) ?? 0)
+        }
+
+        if *self.curr == '\0' {
+            ret Token::Eof
+        }
+
+        # Uncomment this if two-character tokens are added
+        #if (tokenLookup[*self.curr..*(self.curr+1)] != none) {
+        #    self.curr = self.curr+2
+        #    ret tokenLookup[*(self.curr-2)..*(self.curr-1)]
+        #}
+
+        if (tokenLookup[*self.curr] != none) {
+            self.curr = self.curr+1
+            ret tokenLookup[*(self.curr-1)]
+        }
+
+        err 'unlexed character '..*self.curr
+    }
+}

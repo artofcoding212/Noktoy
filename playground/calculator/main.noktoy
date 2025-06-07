@@ -1,0 +1,31 @@
+use Std::{
+    Io::{prompt, println},
+    String::tostring,
+}
+
+let LexerMod = ext "playground/calculator/lexer.noktoy"
+use LexerMod::{Lexer, Token}
+
+let ParserMod = ext "playground/calculator/parser.noktoy"
+use ParserMod::{Parser, Ast}
+
+let InterpreterMod = ext "playground/calculator/interpreter.noktoy"
+use InterpreterMod::Interpreter
+
+println('------------------------------------Calculator-----------------------------------')
+println("This calculator is capable of addition (+), subtraction (-), multiplication (*),")
+println("division (/), modulo (%), power (^), and variables (<name> = <exp>, <name>).")
+println("It's all written in Noktoy, and uses a parser/lexer/interpreter schematic similar")
+println("to Noktoy itself!")
+println("Press Ctrl+C to exit, ENTER to calculate once you've typed an equation.")
+
+let int: Interpreter = Interpreter.new([])
+
+whl true {
+    let inp: String = prompt('>') ?? '0'
+    let parse: Parser = Parser.new(Lexer.new(inp))
+    int.ast = parse:parse()
+    println(int:exec()) cat e {
+        println('Exception: '..tostring(e))
+    }
+}

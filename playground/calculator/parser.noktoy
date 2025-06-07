@@ -1,0 +1,121 @@
+let LexerMod = ext "playground/calculator/lexer.noktoy"
+use LexerMod::{Token, Lexer}
+use Std::{
+    String::tostring,
+    Array::push,
+}
+
+tag Ast {
+    Binary([Token, Ast, Ast]), # $exp[1] $op[0] $exp[2]
+    Number(Number),
+    Var(String),
+    Assign([Ast, Ast]), # $exp[0] = $exp[1]
+    Call([String, Ast[]]), # $name[0](...$exp[1])
+}
+
+str Parser {
+    lex Lexer
+    curr Token
+    prev Token | none
+
+    !new(lex: Lexer) Parser {
+        Parser { lex -> lex, curr -> lex:next(), prev -> none }
+    }
+
+    parse(self: Parser) Ast[] {
+        mut ast: Ast[] = []
+
+        whl mat self.curr { Token::Eof { false } _ { true } } {
+            ast = push(ast, self:exp())
+        }
+
+        ast
+    }
+
+    exp(self: Parser) Ast {
+        self:assign()
+    }
+
+    adv(self: Parser) Token {
+        self.prev = self.curr
+        self.curr = self.lex:next()
+        self.prev
+    }
+
+    assign(self: Parser) Ast {
+        let exp = self:term()
+
+        if mat (self.curr) { _ { false } Token::Equals { true } } {
+            self:adv()
+            ret Ast::Assign([exp, self:term()])
+        }
+
+        exp
+    }
+
+    term(self: Parser) Ast {
+        mut left = self:factor()
+
+        whl mat (self.curr) { _ {false} Token::Plus, Token::Minus { true } } {
+            left = Ast::Binary([self:adv(), left, self:factor()])
+        }
+
+        left
+    }
+
+    factor(self: Parser) Ast {
+        mut left = self:pow()
+
+        whl mat (self.curr) { _ {false} Token::Star, Token::Slash, Token::Percent { true } } {
+            left = Ast::Binary([self:adv(), left, self:pow()])
+        }
+
+        left
+    }
+
+    pow(self: Parser) Ast {
+        mut left = self:lit()
+
+        whl mat (self.curr) { _ {false} Token::Pow { true } } {
+            left = Ast::Binary([self:adv(), left, self:lit()])
+        }
+
+        left
+    }
+    
+    lit(self: Parser) Ast {
+        let a = self:adv()
+
+        mat (a) {
+            Token::Number(n) {
+                Ast::Number(n)
+            }
+            Token::Id(i) {
+                if mat self.curr { Token::LParen { true } _ { false } } {
+                    self:adv()
+                    mut args: Ast[] = []
+                    whl mat self.curr { Token::RParen { false } _ { true } } {
+                        args = push(args, self:exp())
+                        if mat self.curr { Token::Comma { true } _ { false } } {
+                            self:adv()
+                        }
+                    }
+
+                    self:adv()
+                    ret Ast::Call([i, args])
+                }
+                Ast::Var(i)
+            }
+            Token::LParen {
+                let e = self:exp()
+                if mat self:adv() { Token::RParen { false } _ { true } } {
+                    err 'expected closing parenthesis'
+                }
+                e
+            }
+            _ {
+                err 'unparsed token '..tostring(self.prev)
+            }
+        }
+    }
+}

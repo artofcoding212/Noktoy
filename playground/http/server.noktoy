@@ -1,0 +1,39 @@
+use Std::{
+    Http::{serve, Request, Response, jsonStringify},
+    Io::println as print,
+}
+
+let PORT: Number = 8000
+
+# You can go to http://localhost:8000 to see the "Hello, world!" message
+# Optionally, you can run the /playground/http/client.noktoy file to see it toy with the server
+
+fun server(req: Request) Response {
+    print("Received request {method: "..req.method..", path: "..req.url.path.."}")
+
+    if req.url.path == '/' {
+        ret Response.new("Hello, world!", { status -> 200 })
+    }
+
+    if req.url.path == '/api' && req.method == 'GET' {
+        ret Response.new(jsonStringify({ foo -> 'bar', baz -> 'foobar' }), {
+            status -> 200,
+            headers -> {
+                "Content-Type" -> "application/json"
+            }
+        })
+    }
+
+    if req.url.path == '/api' && req.method == 'POST' {
+        let body = req:json() cat e {
+            print("Unable to get POST data: "..e)
+            ret Response.new("Couldn't parse JSON", { status -> 400 })
+        }
+        print("Got POST data:\n\t"..body)
+        ret Response.new("OK", { status -> 200 })
+    }
+
+    ret Response.new("Not Found", { status -> 404 })
+}
+
+serve(server, { port -> PORT }).await()

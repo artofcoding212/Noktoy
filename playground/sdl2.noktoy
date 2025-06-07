@@ -1,0 +1,124 @@
+use Std::{
+    FFI::{
+        formatLib,
+        loadLib,
+        CType,
+        CValue,
+    },
+    String::encodeText,
+    Math::{ sin, pi, floor },
+    Io::println as print,
+}
+
+# This is a test of Noktoy's FFI (foreign function interface) standard entry.
+# It uses the SDL2 library to create a rainbow window.
+
+let sdl = loadLib(formatLib("SDL2"), {
+    SDL_Init -> {
+        params -> [CType::u32],
+        result -> CType::i32,
+    },
+    SDL_InitSubSystem -> {
+        params -> [CType::u32],
+        result -> CType::i32,
+    },
+    SDL_GetError -> {
+        params -> [],
+        result -> CType::Pointer,
+    },
+    SDL_CreateWindow -> {
+        params -> [CType::Buffer, CType::i32, CType::i32, CType::i32, CType::i32, CType::u32],
+        result -> CType::Pointer,
+    },
+    SDL_SetWindowResizable -> {
+        params -> [CType::Pointer, CType::u8],
+        result -> CType::None,
+    },
+    SDL_CreateRenderer -> {
+        params -> [CType::Pointer, CType::i32, CType::u32],
+        result -> CType::Pointer,
+    },
+    SDL_SetRenderDrawColor -> {
+        params -> [CType::Pointer, CType::i8, CType::i8, CType::i8, CType::i8]
+        result -> CType::i32,
+    },
+    SDL_PollEvent -> {
+        params -> [CType::Pointer],
+        result -> CType::i32,
+    },
+    SDL_RenderClear -> {
+        params -> [CType::Pointer],
+        result -> CType::i32,
+    },
+    SDL_RenderPresent -> {
+        params -> [CType::Pointer],
+        result -> CType::None,
+    },
+    SDL_DestroyRenderer -> {
+        params -> [CType::Pointer],
+        result -> CType::None,
+    },
+    SDL_DestroyWindow -> {
+        params -> [CType::Pointer],
+        result -> CType::None,
+    },
+    SDL_Quit -> {
+        params -> [],
+        result -> CType::None,
+    },
+})
+
+do {
+    let ret = sdl.SDL_Init(0)
+    if ret:number() != 0 {
+        err 'encountered SDL2 error:\n\t'..sdl.SDL_GetError():ptrCString()
+    }
+}
+
+let win = sdl.SDL_CreateWindow(
+    encodeText("Hello from Noktoy's FFI library!\0"), 
+        # ^ We do this to get a C null-terminated string to pass as a const char*
+    805240832,
+    805240832,
+    512,
+    512,
+    0
+)
+
+if mat win.type { CType::None { true } _ { false } } {
+    err 'encountered SDL2 error:\n\t'..sdl.SDL_GetError():ptrCString()
+}
+
+sdl.SDL_SetWindowResizable(win, 1)
+
+let renderer = sdl.SDL_CreateRenderer(win, -1, 2 | 4)
+
+if mat renderer.type { CType::None { true } _ { false } } {
+    err 'encountered SDL2 error:\n\t'..sdl.SDL_GetError():ptrCString()
+}
+
+mut quit: Bool = false
+mut colorPhase: Number = 0
+
+whl (!quit) {
+    let e = CValue.buf(56)
+    whl sdl.SDL_PollEvent(e):number() != 0 {
+        let event = e:ptrU32(0)
+        if event == 256 { # SDL_QUIT
+            quit = true
+            brk
+        }
+    }
+    colorPhase = colorPhase + 0.01
+    let r = 127 * sin(colorPhase) + 128
+    let g = 127 * sin(colorPhase + 2 * pi / 3) + 128
+    let b = 127 * sin(colorPhase + 4 * pi / 3) + 128
+
+    sdl.SDL_SetRenderDrawColor(renderer, floor(r%255), floor(g%255), floor(b%255), 255)
+    sdl.SDL_RenderClear(renderer)
+    sdl.SDL_RenderPresent(renderer)
+}
+
+sdl.SDL_DestroyRenderer(renderer)
+sdl.SDL_DestroyWindow(win)
+sdl.SDL_Quit()

@@ -1,0 +1,49 @@
+use Std::{
+    Array::{len, fill, push},
+    String::tonumber,
+    Io::{print, prompt}
+}
+
+# This is Noktoy's implementation of Tsoding's implementation of Rule 110 in B!
+# You can check out his version (in B) at "https://github.com/tsoding/b/blob/main/examples/04_rule110.b".
+
+let genCount: Number = tonumber(prompt('Number of generations:') ?? '10')
+let width: Number = tonumber(prompt('Width:') ?? '50')
+
+mut current: Number[] = []
+for i, _ of fill(width, 0) {
+    current = push(current, if i == width-1 { 1 } els { 0 })
+}
+
+fun tostringGen(gen: Number[]) String {
+    mut buf: String = ""
+    for _, v of (gen) {
+        buf = buf..(if v == 1 { '■' } els { ' ' })
+    }
+    ret buf.."\n"
+}
+
+fun nextGen(this: Number[]) {
+    mut next: Number[] = []
+    let size = len(this)
+    next = push(next, 0)
+
+    mut state = this[0] | this[1] << 1
+
+    for i, _ of fill(size-2, 0) {
+        state = (state << 1) & 7
+        state = state | (if (i+2 >= size) { 0 } els { this[i+2] })
+        next = push(next, (110 >> state) & 1)
+    }
+
+    next = push(next, 0)
+    next
+}
+
+print(tostringGen(current))
+mut buf: String = "" # Write to a buffer to decrease I/O utilization and thus increase performance
+for i, _ of fill(genCount, 0) {
+    current = nextGen(current)
+    buf = buf..tostringGen(current)
+}
+print(buf)

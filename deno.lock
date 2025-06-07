@@ -1,0 +1,59 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/path@*": "1.1.0",
+    "jsr:@std/path@^1.1.0": "1.1.0",
+    "npm:@msgpack/msgpack@^3.1.2": "3.1.2",
+    "npm:@types/node@*": "22.12.0",
+    "npm:chalk@^5.4.1": "5.4.1",
+    "npm:fs@*": "0.0.2",
+    "npm:fs@0.0.2": "0.0.2",
+    "npm:fss@*": "1.0.0",
+    "npm:fsss@*": "0.0.1"
+  },
+  "jsr": {
+    "@std/path@1.1.0": {
+      "integrity": "ddc94f8e3c275627281cbc23341df6b8bcc874d70374f75fec2533521e3d6886"
+    }
+  },
+  "npm": {
+    "@msgpack/msgpack@3.1.2": {
+      "integrity": "sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ=="
+    },
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "bluebird@2.11.0": {
+      "integrity": "sha512-UfFSr22dmHPQqPP9XWHRhq+gWnHCYguQGkXQlbyPtW5qTnhFWA8/iXg765tH0cAjy7l/zPJ1aBTO0g5XgA7kvQ=="
+    },
+    "chalk@5.4.1": {
+      "integrity": "sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w=="
+    },
+    "fs@0.0.2": {
+      "integrity": "sha512-YAiVokMCrSIFZiroB1oz51hPiPRVcUtSa4x2U5RYXyhS9VAPdiFigKbPTnOSq7XY8wd3FIVPYmXpo5lMzFmxgg=="
+    },
+    "fss@1.0.0": {
+      "integrity": "sha512-njF1AaTBUO49CQFdr8Lv+zlOYX1YI9/XsY7rH3HML/MYU5UJC/tcvv4vmFlzMzIsX/jCvOoL517m8c4WJL5Pmg=="
+    },
+    "fsss@0.0.1": {
+      "integrity": "sha512-/mN5ltf9YUCDipolFQf9V+VZfArZA69HFNrjHsQkxfGBbNdtDUyZxZ8e9bj/HVUFmxOJubuiETo+wZVS43wUvA==",
+      "dependencies": [
+        "bluebird"
+      ]
+    },
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/path@^1.1.0",
+      "npm:@msgpack/msgpack@^3.1.2",
+      "npm:chalk@^5.4.1",
+      "npm:fs@*"
+    ]
+  }
+}

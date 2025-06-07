@@ -1,0 +1,39 @@
+use Std::{
+    Io::println as print
+    Array::len
+}
+
+str File {
+    name String
+    contents String
+}
+
+tag Attachment {
+    File(File),
+    Reaction([String, Number]),
+}
+
+fun sendMessage(sender: String, contents: String, attached: Attachment[]) {
+    mut buf: String = ""
+    for i, attach of (attached) {
+        mat (attach) {
+            Attachment::File(f) {
+                buf = buf.."File "..f.name..": "..f.contents
+            }
+            Attachment::Reaction(r) {
+                buf = buf..r[0].." ("..r[1]..")"
+            }
+        }
+        if (i+1) < len(attached) {
+            buf = buf..", "
+        }
+    }
+    print("@"..sender..":\n   "..contents.."\n"..buf)
+}
+
+sendMessage("artofcoding212", "Hello from Noktoy!", [ Attachment::File(File{ name -> "foo.txt", contents -> "bar" }) ])
+print("-------")
+sendMessage("artofcoding212", "Farewell, my Noktoy program as you near the end of your execution!", [ 
+    Attachment::Reaction(["👍", 1010101]),
+    Attachment::Reaction(["😔", 69420])
+])

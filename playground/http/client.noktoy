@@ -1,0 +1,42 @@
+use Std::{
+    Io::println as print,
+    Http::{ Response, fetch, jsonStringify }
+}
+
+let SERVER_PORT: Number = 8000
+let url = "http://localhost:8000/api"
+
+do { # GET
+    let response = fetch(url, {
+        method -> "GET",
+        headers -> {
+            "Content-Type" -> "application/json"
+        }
+    })
+
+    if !response.ok {
+        err 'HTTP error (w/ status '..response.status'): '..response:text()
+    }
+
+    print("GET response: "..jsonStringify(response:json()))
+}
+
+do { # POST
+    let payload = {
+        foo -> "bar",
+        hello -> "world",
+    }
+    let response = fetch(url, {
+        method -> "POST",
+        headers -> {
+            "Content-Type" -> "application/json"
+        },
+        body -> jsonStringify(payload)
+    })
+
+    if !response.ok {
+        err 'HTTP error (w/ status '..response.status'): '..response:text()
+    }
+
+    print("POST response: "..response:text())
+}

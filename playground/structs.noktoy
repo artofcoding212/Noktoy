@@ -1,0 +1,23 @@
+use Std::Io::{println as print, prompt}
+
+str Greeter {
+    name String
+    hobby String
+
+    !new(name: String) Greeter {
+        Greeter { name -> name, hobby -> "" }
+    }
+
+    greet(self: Greeter) {
+        print("Hello, "..self.name.."!")
+    }
+
+    ungreet(self: Greeter) {
+        print("Goodbye, "..self.name.."! Have fun "..self.hobby.."!")
+    }
+}
+
+let greeter: Greeter = Greeter.new(prompt("Enter your name:"))
+greeter:greet()
+greeter.hobby = prompt("What's your hobby?")
+greeter:ungreet()

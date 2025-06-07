@@ -1,0 +1,20 @@
+use Std::{
+    Io::print,
+    String::{split, len},
+    Array::fill,
+}
+
+let mystr = "Hello, world!"
+mut ptrOffset: &String = &""
+for i, v of split(mystr, "") {
+    if i==0 { 
+        ptrOffset = &v  
+    } els {
+        &v
+    }
+}
+for i, _ of fill(len(mystr), 0) {
+    print(*(i+ptrOffset))
+}
+
+print("\n")

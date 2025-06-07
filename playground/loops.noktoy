@@ -1,0 +1,28 @@
+use Std::{
+    Io::{println as print},
+    Math::floor,
+}
+
+let population: Number = 30
+mut i: Number = 0
+mut arr: Number[] = []
+
+whl (i <= population) {  # The parenthesis were put there to avoid the parser of thinking that its a struct instantiation of population{} (Haha, not sure how to fix this one)
+    arr[i] = floor(i^1.5)
+    i = i+1
+    if i == population; {
+        brk
+    }
+}
+
+mut buf: String = ''
+
+for i, v of (arr) {
+    buf = buf..'Index '..i..': '..v
+    if (i+1)%2 == 0 {
+        print(buf)
+        buf = ''
+        cnt
+    }
+    buf = buf..(if (i < 10) { '   ' } els {' '}) # Padding
+}

@@ -1,0 +1,30 @@
+use Std::{
+    FFI::{
+        loadLib,
+        loadScriptLib,
+        CType,
+        CValue,
+    },
+    Fs::{thisPath, dirName, resolve},
+    Io::println as print,
+}
+
+# Note: I only compiled the MyCDLL to Windows.
+# A more realistic usage of this would include a .dll, .so, and .dylib version
+let testlib = loadLib(resolve(dirName(thisPath()), "./ffi-c-stuff/MyCDLL.dll"), {
+    add -> { # int add(int a, int b);
+        params -> [CType::i32, CType::i32],
+        result -> CType::i32, 
+    },
+    hello_world -> { # char* hello_world();
+        params -> [],
+        result -> CType::Pointer,
+    },
+})
+
+let tsLib = loadScriptLib(resolve(dirName(thisPath()), "./ffi-test.ts"))
+
+print(testlib.add(
+    2, 2
+):number(), tsLib.add(2,2))
+print(testlib.hello_world():ptrCString())

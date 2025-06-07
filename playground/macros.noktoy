@@ -1,0 +1,45 @@
+use Std::{
+    Io::println as print,
+    Noktoy::{
+        Ast,
+        execAst,
+        makeMacro,
+    },
+    Array::len,
+}
+
+let opReverseLu: <String: String> = {
+    "+" -> "-",
+    "-" -> "+",
+    "*" -> "/",
+    "/" -> "*",
+    "|" -> "&",
+    "&" -> "|",
+    "<<" -> ">>",
+    ">>" -> "<<",
+    "==" -> "!=",
+    "!=" -> "==",
+    ">" -> "<",
+    ">=" -> "<=",
+    "<" -> ">",
+    "<=" -> ">=",
+}
+
+let reverseOp = makeMacro(fun (ast: Ast[]) Number|Bool {
+    if len(ast) != 1 {
+        ret 0
+    }
+
+    mat ast[0] {
+        Ast::Binary(b) {
+            execAst(Ast::Binary([b[0], opReverseLu[b[1]] ?? b[1], b[2]]))
+        }
+        _ {
+            0
+        }
+    }
+})
+
+print(reverseOp(2+2))
+print(reverseOp(3-2))
+print(reverseOp(2>3))

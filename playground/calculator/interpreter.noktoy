@@ -1,0 +1,125 @@
+let ParserMod = ext "playground/calculator/parser.noktoy"
+use ParserMod::Ast
+
+let LexerMod = ext "playground/calculator/lexer.noktoy"
+use LexerMod::Token
+
+use Std::{
+    String::tostring,
+    Noktoy::{
+        typeof,
+        Type,
+    },
+    Array::push,
+    Math::{sqrt, pi, sin, cos, rad, deg},
+}
+
+mut scope: <String: Any> = {
+    sqrt -> fun(args: Number[]) Number {
+        sqrt(args[0] ?? 0)
+    },
+    sin -> fun(args: Number[]) Number {
+        sin(args[0] ?? 0)
+    },
+    cos -> fun(args: Number[]) Number {
+        cos(args[0] ?? 0)
+    },
+    rad -> fun(args: Number[]) Number {
+        rad(args[0] ?? 0)
+    },
+    deg -> fun(args: Number[]) Number {
+        deg(args[0] ?? 0)
+    },
+    pi -> pi,
+}
+
+str Interpreter {
+    ast Ast[]
+
+    !new(ast: Ast[]) Interpreter {
+        Interpreter { ast -> ast }
+    }
+
+    exec(self: Interpreter) Number {
+        mut last = 0
+
+        for _, ast of self.ast {
+            last = self:run(ast)
+        }
+
+        last
+    }
+
+    run(self: Interpreter, node: Ast) Number {
+        mat (node) {
+            Ast::Number(n) {
+                n
+            }
+            Ast::Var(v) {
+                let a = scope[tostring(v)]
+                if a==none || typeof(a) != Type::Number {
+                    err 'variable '..v..' doesnt exist'
+                }
+                a
+            }
+            Ast::Assign(a) {
+                let name = a[0]
+                mut foo: String = ''
+                mat (name) {
+                    Ast::Var(v) {
+                        foo = v
+                    }
+                    _ {
+                        err 'can only assign to identifiers'
+                    }
+                }
+
+                scope[foo] = self:run(a[1])
+            }
+            Ast::Call(c) {
+                let name = c[0]
+                let args = c[1]
+                let fn = scope[tostring(name)]
+                if fn==none || typeof(fn) != Type::Fun {
+                    err 'function '..name..' doesnt exist'
+                }
+                mut newArgs = []
+                for _, arg of (args) {
+                    newArgs = push(newArgs, self:run(arg))
+                }
+                fn(newArgs)
+            }
+            Ast::Binary(b) {
+                let l = self:run(b[1])
+                let r = self:run(b[2])
+
+                mat b[0] {
+                    Ast::Plus {
+                        l+r
+                    }
+                    Ast::Minus {
+                        l-r
+                    }
+                    Ast::Star {
+                        l*r
+                    }
+                    Ast::Slash {
+                        l/r
+                    }
+                    Ast::Pow {
+                        l^r
+                    }
+                    Ast::Percent {
+                        l%r
+                    }
+                    _ {
+                        err 'operator '..tostring(b[0])..' is unsupported'
+                    }
+                }
+            }
+            _ {
+                err 'unhandled AST node '..tostring(node)
+            }
+        }
+    }
+}

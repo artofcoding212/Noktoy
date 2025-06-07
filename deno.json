@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "@msgpack/msgpack": "npm:@msgpack/msgpack@^3.1.2",
+    "@std/path": "jsr:@std/path@^1.1.0",
+    "chalk": "npm:chalk@^5.4.1",
+    "fs": "npm:fs"
+  }
+}

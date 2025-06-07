@@ -1,0 +1,66 @@
+use Std::{
+    Thread,
+    Time::sleep,
+    Io::println as print,
+}
+
+let t: Thread = Thread.new(fun (this: Thread){
+    use Std::{
+        Math::sqrt,
+        Io::println as print,
+        Time::sleepms,
+    }
+
+    mut n = 0
+    mut i = 0
+    mut block = true
+
+    whl i < 100000 { # Simulate heavy load to ensure true multithreading
+        i = i+1
+        n = n+sqrt(i)
+        if i == 50000 {
+            this.post('Thread is halfway')
+        }
+        if block == true { # We haven't yet reached our desired request, so we block to allow it to run
+                           # when it does eventually reach that request.
+            sleepms(5)
+        }
+    }
+
+    this.post(none)
+    print("Thread terminated")
+}, {
+    onPost ->
+        fun (this: Thread, msg){
+            print(msg)
+        },
+    onRequest ->
+        fun (this: Thread, msg){
+            block = false # We've processed the one request we need to process, so stop blocking our thread
+            msg[0]+msg[1]
+        }
+})
+
+mut active: Bool = true
+
+t:spawn({
+    onPost ->
+        fun (msg){
+            if msg == none {
+                active = false
+            } els {
+                print(msg)
+            }
+        }
+})
+
+sleep(0.6)
+
+print("Response of thread 2+2: "..t:req([2,2]))
+
+whl active == true {
+    sleep(0.4)
+    print("Main thread is still running")
+}
+
+print("Main thread terminated")
