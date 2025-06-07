@@ -1,0 +1,57 @@
+{
+    "name": "noktoy-highlighter",
+    "displayName": "Noktoy",
+    "version": "0.0.1",
+    "main": "./client_out.js",
+    "files": [
+        "client_out.js",
+        "server_out.js"
+    ],
+    "engines": {
+        "vscode": "^1.88.0"
+    },
+    "publisher": "artofcoding212",
+    "activationEvents": [
+        "onLanguage:noktoy"
+    ],
+    "categories": [
+        "Programming Languages"
+    ],
+    "scripts": {
+        "build": "deno run --allow-all build.ts"
+    },
+
+    "contributes": {
+        "commands": [
+            {
+                "command": "noktoy.execute",
+                "title": "Noktoy: Execute This File"
+            }
+        ],
+        "languages": [{
+            "id": "noktoy",
+            "aliases": ["Noktoy", "noktoy"],
+            "extensions": [".noktoy", ".nk"],
+            "configuration": "./language-configuration.json",
+            "icon": {
+                "light": "./logo.png",
+                "dark": "./logo.png"
+            }
+        }],
+        "grammars": [
+            {
+                "language": "noktoy",
+                "scopeName": "source.noktoy",
+                "path": "./noktoy-highlighter.tmLanguage.json"
+            }
+        ]
+    },
+    "dependencies": {
+        "child_process": "^1.0.2",
+        "esbuild": "^0.25.5",
+        "vscode": "^1.1.37",
+        "vscode-languageclient": "8.0.1",
+        "vscode-languageserver": "8.0.1",
+        "vscode-languageserver-textdocument": "^1.0.12"
+    }
+}

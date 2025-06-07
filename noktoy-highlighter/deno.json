@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "generator-code": "npm:generator-code@^1.11.9"
+  },
+  "tasks": {
+    "start-server": "deno run --allow-all server.ts"
+  }
+}

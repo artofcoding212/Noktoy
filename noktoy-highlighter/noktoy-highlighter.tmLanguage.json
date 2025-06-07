@@ -1,0 +1,334 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Noktoy",
+    "scopeName": "source.noktoy",
+    "patterns": [
+        {
+            "name": "comment.line.comment",
+            "begin": "#",
+            "end": "\\n|\\0"
+        },
+        {
+            "include": "#statements"
+        },
+        {
+            "include": "#expressions"
+        }
+    ],
+    "repository": {
+        "statements": {
+            "patterns": [
+                {
+                    "comment": "TAGS - tag id { id, id(Type) }",
+                    "name": "keyword.operator.tag_extras",
+                    "begin": "\\b(tag)\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*{",
+                    "end": "}",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.tag_keyword"
+                        },
+                        "2": {
+                            "name": "entity.name.class.tag_name"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "comment.line.comment",
+                            "begin": "#",
+                            "end": "\\n|\\0"
+                        },
+                        {
+                            "comment": "BETTER TAG - id(Type)",
+                            "match": "([a-zA-Z_][a-zA-Z0-9]*)\\((.*)\\)",
+                            "captures": {
+                                "1": {"name": "entity.name.function.tag_member_full"},
+                                "2": {"patterns": [{"include": "#types"}]}
+                            }
+                        },
+                        {
+                            "comment": "REGULAR TAG - id",
+                            "match": "[a-zA-Z_][a-zA-Z0-9]*",
+                            "name": "entity.name.function.tag_member"
+                        }
+                    ]
+                },
+                {
+                    "comment": "STRUCTURES - str id { id Type id(id: Type) Type? }",
+                    "name": "keyword.operator.struct_extras",
+                    "begin": "\\b(str)\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*{",
+                    "end": "(?m)^}",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.str_keyword"
+                        },
+                        "2": {
+                            "name": "entity.name.class.str_name"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "comment.line.comment",
+                            "begin": "#",
+                            "end": "\\n|\\0"
+                        },
+                        {
+                            "comment": "STRUCT FUNCTIONS - id(op: T, ...) RetT",
+                            "name": "keyword.operator.fun_parenthesis",
+                            "begin": "(?m)^[\\s!]*\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((.*)\\)(?!\\{)(([a-zA-Z_][a-zA-Z0-9_]*))?\\s*(?!\\{)(.*(?!\\{))?",
+                            "end": "(?m)^ {0,4}}",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "entity.name.function.fun_name"
+                                },
+                                "2": {
+                                    "patterns": [
+                                        {
+                                            "comment": "FUNCTION PARAMETER NAME - name(: [type])?",
+                                            "match": "([a-zA-Z_][a-zA-Z_0-9]*)(:\\s*([^,]*))?",
+                                            "captures": {
+                                                "1": {
+                                                    "name": "variable.name.fun_param_name"
+                                                },
+                                                "2": {
+                                                    "name": "keyword.operator.fun_param_colon"
+                                                },
+                                                "3": {
+                                                    "patterns": [
+                                                        {
+                                                            "include": "#types"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "5": {
+                                    "patterns": [
+                                        {
+                                            "include": "#types"
+                                        }
+                                    ]
+                                }
+                            },
+                            "patterns": [
+                                {
+                                    "include": "#statements"
+                                },
+                                {
+                                    "include": "#expressions"
+                                }
+                            ]
+                        },
+                        {
+                            "comment": "STRUCT MEMBERS - id Type",
+                            "match": "([a-zA-Z_][a-zA-Z0-9_]*)\\s+(.*)\\n",
+                            "captures": {
+                                "1": {"name": "variable.name.struct_member_name"},
+                                "2": {"patterns": [{"include":"#types"}]}
+                            }
+                        },
+                        {
+                            "comment": "STATIC OPERATOR - !",
+                            "match": "!",
+                            "name": "keyword.control.static_str"
+                        }
+                    ]
+                },
+                {
+                    "comment": "VARIABLE DECLARATIONS - mut/let id: OptionalT =",
+                    "name": "keyword.operator.var_eqs",
+                    "match": "\\b(mut|let)\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*)(:\\s*([^,=]*))?\\s*=",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.var_keyword"
+                        },
+                        "2": {
+                            "name": "variable.name.var_name"
+                        },
+                        "4": {
+                            "patterns": [
+                                {
+                                    "include": "#types"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "comment": "FUNCTIONS - fun id(op: T, ...) RetT",
+                    "name": "keyword.operator.fun_parenthesis",
+                    "match": "\\b(fun)\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*)?\\s*\\((.*)\\)(?!\\{)(([a-zA-Z_][a-zA-Z0-9_]*))?\\s*(?!\\{)(.*(?!\\{))?",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.fun_keyword"
+                        },
+                        "2": {
+                            "name": "entity.name.function.fun_name"
+                        },
+                        "3": {
+                            "patterns": [
+                                {
+                                    "comment": "FUNCTION PARAMETER NAME - name(: [type])?",
+                                    "match": "([a-zA-Z_][a-zA-Z_0-9]*)(:\\s*([^,]*))?",
+                                    "captures": {
+                                        "1": {
+                                            "name": "variable.name.fun_param_name"
+                                        },
+                                        "2": {
+                                            "name": "keyword.operator.fun_param_colon"
+                                        },
+                                        "3": {
+                                            "patterns": [
+                                                {
+                                                    "include": "#types"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "6": {
+                            "patterns": [
+                                {
+                                    "include": "#types"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "comment": "KEYWORDS",
+                    "name": "keyword.control.gen_keywords",
+                    "match": "\\b(for|of|whl|use|as|err|ret|cnt|brk)\\b"
+                }
+            ]
+        },
+        "expressions": {
+            "patterns": [
+                {
+                    "name": "comment.line.comment",
+                    "begin": "#",
+                    "end": "\\n|\\0"
+                },
+                {
+                    "name": "constant.numeric.number",
+                    "match": "[0-9]+(\\.[0-9]+)?",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.number"
+                        }
+                    }
+                },
+                {
+                    "name": "string.quoted.double",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.strings",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.strings",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "comment": "KEYWORDS CONSTS",
+                    "name": "constant.other.lang",
+                    "match": "\\b(Std|true|false|none)\\b"
+                },
+                {
+                    "comment": "KEYWORDS",
+                    "name": "keyword.control.gen_keywords",
+                    "match": "\\b(mat|if|els|ext|do)\\b"
+                },
+                {
+                    "comment": "FN CALLS: id(",
+                    "name": "keyword.operator.fun_call_parenthesis",
+                    "match": "\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b\\(",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.function.fun_name"
+                        }
+                    }
+                },
+                {
+                    "comment": "STRUCT INSTANTIATIONS - id {",
+                    "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b\\s*{",
+                    "captures": {
+                        "1": {"name": "entity.name.class.str_name"}
+                    }
+                },
+                {
+                    "comment": "IDS",
+                    "match": "\\b[a-zA-Z_][a-zA-Z_0-9]*\\b",
+                    "name": "variable.name.id"
+                },
+                {
+                    "comment": "OPERATORS",
+                    "match": "(=|!|>|<|\\?|:|,|\\||&|\\.\\.|\\+|-|\\*|\\^|%|{|}|\\(|\\)|\\[|\\])",
+                    "name": "keyword.operator.op"
+                }
+            ]
+        },
+        "types": {
+            "patterns": [
+                {
+                    "comment": "TYPE ARRAYS - t[]",
+                    "match": "\\[\\]",
+                    "name": "keyword.operator.array"
+                },
+                {
+                    "comment": "TYPE TUPLES - [t, t, ...]",
+                    "match": "\\[(.*)\\]",
+                    "name": "keyword.operator.array",
+                    "captures": {
+                        "1": {
+                            "patterns": [
+                                {
+                                    "include": "#types"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "comment": "TYPE OPS - |, ,",
+                    "match": "(\\||,)",
+                    "name": "keyword.operator.type_op",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.operator.type_op"
+                        }
+                    }
+                },
+                {
+                    "comment": "TYPE KEYWORDS",
+                    "match": "\\b(fun)\\b",
+                    "name": "keyword.control.type_kwords"
+                },
+                {
+                    "comment": "TYPE LITERALS",
+                    "match": "\\b(Number|String|Bool|Boolean|None|none|Any|any)\\b",
+                    "name": "constant.language.lit_type"
+                },
+                {
+                    "comment": "TYPE ENTITIES - id",
+                    "match": "\\b[a-zA-Z_][a-zA-Z_0-9]*\\b",
+                    "name": "entity.name.type.type_name"
+                }
+            ]
+        }
+    }
+}
